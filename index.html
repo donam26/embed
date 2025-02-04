@@ -48,12 +48,32 @@
       if (response.authResponse) {
         const code = response.authResponse.code;
         console.log("Authorization Code:", code);
-        // Bạn có thể sử dụng code này để gửi lên server của bạn
-        // và thực hiện cuộc gọi server-to-server để lấy access token
+        
+        // Tạo form data để gửi request lấy access token
+        const formData = new FormData();
+        formData.append('client_id', '623265896716459');
+        formData.append('client_secret', '9a7b25df643ae384397fefe17a60755');
+        formData.append('redirect_uri', 'https://booming-mountain-lingonberry.glitch.me');
+        formData.append('code', code);
+        formData.append('grant_type', 'authorization_code');
+
+        // Gọi API để lấy access token
+        fetch('https://graph.facebook.com/v22.0/oauth/access_token', {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Access Token Response:', data);
+          document.getElementById("sdk-response").textContent = JSON.stringify(data, null, 2);
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          document.getElementById("sdk-response").textContent = JSON.stringify(error, null, 2);
+        });
       } else {
         console.log('Đăng nhập không thành công');
       }
-      document.getElementById("sdk-response").textContent = JSON.stringify(response, null, 2);
     }
 
     const launchWhatsAppSignup = () => {
@@ -69,7 +89,7 @@
           featureType: 'WHATSAPP',
           sessionInfoVersion: '2'
         },
-        redirect_uri: window.location.href
+        redirect_uri: 'https://booming-mountain-lingonberry.glitch.me'
       });
     }
   </script>
